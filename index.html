@@ -21,7 +21,7 @@
   -->
   <body>
 
-    <button id="btnSave">Add To Homescreen</button>
+    <button id="btnAdd">Add To Homescreen</button>
 
     <!-- Hiding library elements in the DOM is fun -->
     <aside id="library">
@@ -47,14 +47,28 @@
       });
     }
 
+    var deferredPrompt;
 
-    document.getElementById("btnSave").addEventListener('click', function() {
+    window.addEventListener('beforeinstallprompt', function(e) {
+      console.log('beforeinstallprompt Event fired');
+      e.preventDefault();
+
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+
+      return false;
+    });
+
+
+    document.getElementById("btnAdd").addEventListener('click', function() {
       if(deferredPrompt !== undefined) {
         // The user has had a positive interaction with our app and Chrome
         // has tried to prompt previously, so let's show the prompt.
-        deferredPrompt.prompt();
 
-        console.log("first if...");
+        // hide add to homescreen button
+        btnAdd.style.display = 'none';
+
+        deferredPrompt.prompt();
 
         // Follow what the user has done with the prompt.
         deferredPrompt.userChoice.then(function(choiceResult) {
@@ -72,10 +86,14 @@
           deferredPrompt = null;
         });
       }
-      else {
-        console.log("else");
-      }
     });
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      console.log('beforeinstallprompt Event fired');
+      e.preventDefault();
+      return false;
+    });
+
 
   </script>
 </html>
